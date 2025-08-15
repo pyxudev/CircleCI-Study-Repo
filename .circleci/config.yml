@@ -1,11 +1,13 @@
 version: 2.1
+
 jobs:
   say-hello:
-  docker: 
-    - image: cimg/base:stable 
-  steps: 
-    - run: echo "Hello, CircleCI! "
-  workflows:
-    main:
-      jobs:
-        - say-hello
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run: echo "Hello, CircleCI!"
+
+workflows:
+  main:
+    jobs:
+      - say-hello
