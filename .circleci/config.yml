@@ -1,5 +1,15 @@
+# .circleci/config.yml
 version: 2.1 # CircleCIのバージョンを指定 (2.1が推奨)
 # jobsセクション: 実行するジョブを定義
-jobs: say-hello: # ジョブ名 (任意) docker: # ExecutorとしてDockerを使用 - image: cimg/base:stable # ベースとなるDockerイメージを指定 (CircleCI提供のイメージ) steps: # ジョブ内で実行するステップ - run: echo "Hello, CircleCI! " # echoコマンドを実行
+jobs: say-hello:
+# ジョブ名 (任意)
+docker: 
+# ExecutorとしてDockerを使用 
+- image: cimg/base:stable 
+# ベースとなるDockerイメージを指定 (CircleCI提供のイメージ)
+steps: 
+# ジョブ内で実行するステップ
+- run: echo "Hello, CircleCI! "
+# echoコマンドを実行
 # workflowsセクション: ジョブの実行順序を定義
 workflows: main: # ワークフロー名 (任意) jobs: - say-hello # 実行するジョブを指定
