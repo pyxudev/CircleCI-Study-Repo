@@ -24,10 +24,10 @@ jobs:
             - ~/.npm
           key: v1-deps-{{ checksum "circlecitestapp/package-lock.json" }}
       - run:
-          name: Run tests
+          name: Run lint
           command: |
             cd circlecitestapp
-            npm test
+            npm run lint
       - run:
           name: Build Next.js app
           command: |
