@@ -11,14 +11,14 @@ jobs:
 
       - restore_cache:
         keys:
-          - v2-deps-{{ checksum "circletest/requirements.txt" }}
-          - v2-deps-
+            - v2-deps-{{ checksum "circletest/requirements.txt" }}
+            - v2-deps-
       - run:
         name: Activate environment and install dependencies
         command: |
-          cd circletest
-          . venv/bin/activate
-          pip install -r requirements.txt
+            cd circletest
+            . venv/bin/activate
+            pip install -r requirements.txt
       - save_cache:
         paths:
           - ~/.cache/pip
@@ -26,9 +26,9 @@ jobs:
       - run:
         name: Run script
         command: |
-          cd circletest
-          . venv/bin/activate
-          python app.py
+            cd circletest
+            . venv/bin/activate
+            python app.py
 
 workflows:
   version: 2
