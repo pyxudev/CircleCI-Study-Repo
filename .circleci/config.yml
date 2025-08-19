@@ -34,7 +34,7 @@ jobs:
           python app.py
 
 workflows:
-  version: 2
+  version: 2.2
   build:
     jobs:
       - build
