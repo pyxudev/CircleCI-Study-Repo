@@ -1,37 +1,41 @@
 version: 2.1
 
 jobs:
-	build:
-		docker:
-			- image: cimg/python:3.13.7
-		working_directory: ~/repo
+  build:
+    docker:
+      - image: cimg/python:3.13.7
+    working_directory: ~/repo
 
-		steps:
-			- checkout
+    steps:
+      - checkout
 
-			- restore_cache:
-				keys:
-						- v2-deps-{{ checksum "circletest/requirements.txt" }}
-						- v2-deps-
-			- run:
-				name: Activate environment and install dependencies
-				command: |
-						cd circletest
-						. venv/bin/activate
-						pip install -r requirements.txt
-			- save_cache:
-				paths:
-					- ~/.cache/pip
-				key: v2-deps-{{ checksum "circletest/requirements.txt" }}
-			- run:
-				name: Run script
-				command: |
-						cd circletest
-						. venv/bin/activate
-						python app.py
+      - restore_cache:
+          keys:
+            - v2-deps-{{ checksum "circletest/requirements.txt" }}
+            - v2-deps-
+
+      - run:
+          name: Create venv and install dependencies
+          command: |
+            cd circletest
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ~/.cache/pip
+          key: v2-deps-{{ checksum "circletest/requirements.txt" }}
+
+      - run:
+          name: Run script
+          command: |
+            cd circletest
+            . venv/bin/activate
+            python app.py
 
 workflows:
-	version: 2
-	build-python:
-		jobs:
-			- build
+  version: 2
+  build-python:
+    jobs:
+      - build
