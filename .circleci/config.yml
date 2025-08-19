@@ -1,41 +1,40 @@
-version: 2.2
+version: 2.3
 
 jobs:
   build:
     docker:
-      - image: cimg/node:20.10
-      # Node.js 公式 CircleCI イメージ（バージョンはプロジェクトに合わせる）
+      - image: cimg/python:3.13.7
     working_directory: ~/repo
 
     steps:
       - checkout
-      # リポジトリをクローン
       - restore_cache:
-          keys:
-            - v1-deps-{{ checksum "circlecitestapp/package-lock.json" }}
-            - v1-deps-
+        keys:
+          - v2-deps-{{ checksum "circletest/requirements.txt" }}
+          - v2-deps-
       - run:
-          name: Install dependencies
-          command: |
-            cd circlecitestapp
-            npm ci
+        name: Activate environment
+        command: |
+          cd circletest
+          cd Scripts
+          . activate
+      - run:
+        name: Install dependencies
+        command: |
+          cd circletest
+          pip install -r requirements
       - save_cache:
-          paths:
-            - ~/.npm
-          key: v1-deps-{{ checksum "circlecitestapp/package-lock.json" }}
+        paths:
+          - ~/.pip
+        key: v2-deps-{{ checksum "circletest/requirements.txt" }}
       - run:
-          name: Run lint
-          command: |
-            cd circlecitestapp
-            npm run lint
-      - run:
-          name: Build Next.js app
-          command: |
-            cd circlecitestapp
-            npm run build
+        name: Run script
+        command: |
+          cd circletest
+          python app.py
 
 workflows:
   version: 2
-  build_and_test:
+  build:
     jobs:
       - build
