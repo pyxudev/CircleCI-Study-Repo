@@ -1,4 +1,4 @@
-version: 2.2
+version: 2.3
 
 jobs:
   build-python:
@@ -7,13 +7,13 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Create venv and install dependencies
-        command: |
-          cd circletest
-          python -m venv venv
-          . venv/bin/activate
-          pip install -r requirements.txt
-          python app.py
+          name: Create venv and install dependencies
+          command: |
+            cd circletest
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            python app.py
 
   build-next:
     docker:
