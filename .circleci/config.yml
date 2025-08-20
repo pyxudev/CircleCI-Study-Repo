@@ -9,18 +9,22 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - npm-deps-{{ checksum "package-lock.json" }}
+            - npm-deps-{{ checksum "circlecitestapp/package-lock.json" }}
             - npm-deps-
       - run:
           name: Install dependencies
-          command: npm ci
+          command: |
+              cd circlecitestapp
+              npm ci
       - save_cache:
           paths:
             - ~/.npm
-          key: npm-deps-{{ checksum "package-lock.json" }}
+          key: npm-deps-{{ checksum "circlecitestapp/package-lock.json" }}
       - run:
           name: Run lint
-          command: npm run lint
+          command: |
+              cd circlecitestapp
+              npm run lint
       - run:
           name: Discord notification (Lint done)
           command: |
