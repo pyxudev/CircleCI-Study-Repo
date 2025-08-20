@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  build-python:
+    docker:
+      - image: cimg/python:3.13.7
+    steps:
+      - checkout
+      - run:
+          name: Create venv and install dependencies
+          command: |
+            cd circletest
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            python app.py
+
+  build-next:
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - run: cd circlecitestapp && npm ci && npm run build
+
+workflows:
+  version: 2
+  build-all:
+    jobs:
+      - build-python
+      - build-next
