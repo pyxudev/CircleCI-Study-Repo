@@ -1,30 +1,71 @@
 version: 2.1
 
+orbs:
+  node: circleci/node@5.2.0
+
 jobs:
-  build-python:
+  # ---- Lint チェック ----
+  lint:
     docker:
-      - image: cimg/python:3.13.7
+      - image: cimg/node:20.12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
+            - npm-deps-
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - save_cache:
+          paths:
+            - ~/.npm
+          key: npm-deps-{{ checksum "package-lock.json" }}
+      - run:
+          name: Run lint
+          command: npm run lint
+      - run:
+          name: Discord notification (Lint done)
+          command: |
+            curl -H "Content-Type: application/json" \
+              -d '{"content":"✅ Lint 完了 (develop branch push)"}' \
+              $DISCORD_WEBHOOK
+
+  # ---- GitHub PR 作成 ----
+  create-pr:
+    docker:
+      - image: cimg/base:stable
     steps:
       - checkout
       - run:
-          name: Create venv and install dependencies
+          name: Create PR to main
           command: |
-            cd circletest
-            python -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-            python app.py
-
-  build-next:
-    docker:
-      - image: cimg/node:20.18
-    steps:
-      - checkout
-      - run: cd circlecitestapp && npm ci && npm run build
+            curl -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -d '{
+                "title": "Auto PR from develop",
+                "head": "develop",
+                "base": "main"
+              }' \
+              https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls
+      - run:
+          name: Discord notification (PR created)
+          command: |
+            curl -H "Content-Type: application/json" \
+              -d '{"content":"📌 自動 PR 作成しました (develop → main)"}' \
+              $DISCORD_WEBHOOK
 
 workflows:
   version: 2
-  build-all:
+  develop-workflow:
+    when:
+      equal: [ develop, << pipeline.git.branch >> ]
     jobs:
-      - build-python
-      - build-next
+      - lint
+      - create-pr:
+          requires:
+            - lint
+      - lint:
+          name: lint-pr
+          requires:
+            - create-pr
