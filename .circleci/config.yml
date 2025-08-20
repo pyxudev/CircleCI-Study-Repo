@@ -59,14 +59,14 @@ jobs:
 workflows:
   version: 2
   develop-workflow:
-    when:
-      equal: [ develop, << pipeline.git.branch >> ]
     jobs:
-      - lint
+      - lint:
+          filters:
+            branches:
+              only: develop
       - create-pr:
           requires:
             - lint
-      - lint:
-          name: lint-pr
-          requires:
-            - create-pr
+          filters:
+            branches:
+              only: develop
